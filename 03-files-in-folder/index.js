@@ -9,7 +9,7 @@ const readDir = async (path) => {
 const sizer = async (fPath) => {
   return fsPromises.stat(fPath);
 };
-const isFile = (stats) => {
+const fileCheck = (stats) => {
   return stats.isFile();
 };
 const getName = (fPath) => {
@@ -28,7 +28,7 @@ const outConcat = async (fDirectory) => {
   for (const file of files) {
     const fPath = path.join(fDirectory, file.name);
     const stats = await sizer(fPath);
-    if (isFile(stats)) {
+    if (fileCheck(stats)) {
       console.log(
         `${getName(fPath)} - ${getType(fPath)} - ${getSize(stats)}`
       );
