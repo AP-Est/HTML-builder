@@ -1,37 +1,28 @@
-const path = require('path');
-const fsPromises = require('fs/promises');
 const fs = require('fs');
-const styleDir = path.join(__dirname, 'styles');
-const resultDir = path.join(__dirname, 'project-dist');
-const readFiles = async (dir) => {
-  return fsPromises.readdir(dir, {
-    withFileTypes: true,
-  });
-};
-const fileCheck = async (dataPath) => {
-  const stats = await fsPromises.stat(dataPath);
-  return stats.isFile();
-};
-const cssCheck = (dataPath) => {
-  const extension = path.extname(dataPath);
-  return extension === '.css' ? true : false;
-};
-const addCssFile = async (dist) => {
-  return fsPromises.writeFile(path.join(dist, 'bundle.css'), '');
-};
-const createCss = async (src, dist) => {
-  await addCssFile(dist);
-  const output = fs.createWriteStream(path.join(dist, 'bundle.css'));
-  const files = await readFiles(src);
-  for (const file of files) {
-    const dataPath = path.join(src, file.name);
-    const isFileBoolean = await fileCheck(dataPath);
-    const isCssBoolean = cssCheck(dataPath);
-    if (isFileBoolean & isCssBoolean) {
-      const input = fs.createReadStream(dataPath, 'utf-8');
-      input.pipe(output);
-    }
-  }
-};
+const path = require('path');
+const oldDir = path.join(__dirname, 'styles');
+const newDir = path.join(__dirname, 'project-dist', 'bundle.css');
 
-createCss(styleDir, resultDir);
+fs.createWriteStream(newDir, err => {
+  if (err) console.log(err);
+});
+
+(async () => {
+  await fs.readdir(oldDir, { withFileTypes: true }, (err, files) => {
+    if (err) console.log(err);
+
+    for (let file of files){
+      if (path.extname(file.name).slice(1) === 'css' && file.isFile()) {
+        const fileAddress = path.join(oldDir, file.name);
+
+        fs.readFile(fileAddress, 'utf-8', (err, stylesData) => {
+          if (err) console.log(err);
+
+          fs.appendFile(newDir, stylesData, (err) => {
+            if (err) console.log(err);
+          });
+        });
+      }
+    }
+  })
+})()
