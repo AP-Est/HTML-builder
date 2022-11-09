@@ -20,7 +20,7 @@ const getType = (fPath) => {
 };
 const getSize = (stats) => {
   const bytes = stats.size;
-  const kilobytes = bytes / 1000;
+  const kilobytes = bytes / 1024;
   return `${kilobytes}kb`;
 };
 const outConcat = async (fDirectory) => {
